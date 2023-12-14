@@ -1,1 +1,66 @@
+# Task 3
+# Nombre: Juan Felipe Gómez Bossa
+# Código: 201718923
+# Versión de R: R version 4.3.1 (2023-06-16)
+R.version.string
+
+# Carga de librerías
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
+}
+pacman::p_load(rio, data.table, tidyverse)
+
+## Punto 1.1
+rutas <- list.files("Task-3/input" , recursive=T , full.names=T)
+
+## Punto 1.2 
+
+## Extraer las rutas
+rutas_resto <- str_subset(string = rutas , pattern = "Resto - Ca")
+
+## Cargar en lista
+lista_resto <- import_list(file = rutas_resto)
+
+## Textear la cadena de caracteres 
+rutas_resto[1]
+str_sub(rutas_resto[35],start = 14 , 17)
+
+## Agregar ruta
+View(lista_resto[[1]])
+lista_resto[[1]]$path <- rutas_resto[1]
+
+## Aplicar loop  
+for (i in 1:length(lista_resto)){
+  lista_resto[[i]]$path <- rutas_resto[i]  
+  lista_resto[[i]]$year <- str_sub(lista_resto[[i]]$path,start = 14 , 17)
+}
+View(lista_resto[[20]])
+
+## Punto 1.3
+lista_resto[[36]] <- NULL
+df_resto <- rbindlist(l=lista_resto , use.names=T , fill=T)
+
+## export
+export(df_resto,"pset-3/output/db_full.rds")
+
+## Punto 2
+# Cargar la librería ggplot2
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+
+# Visualización 1: Ejemplo de gráfico de barras
+ggplot(df_resto, aes(x = variable1, fill = year)) +
+  geom_bar() +
+  labs(title = "Fuerza laboral en el tiempo",
+       x = "Tiempo",
+       y = "Numero de personas") +
+  theme_minimal()
+
+# Visualización 2: Ejemplo de gráfico de dispersión
+ggplot(df_resto, aes(x = variable2, y = variable1, color = year)) +
+  geom_point() +
+  labs(title = "Desocupados a lo largo del tiempo",
+       x = "Tiempo",
+       y = "Numero de desocupados") +
+  theme_minimal()
 
